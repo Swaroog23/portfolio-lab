@@ -1,10 +1,14 @@
+from app_portfolio.models import Donation, Institution
 from django.shortcuts import render
 from django.views import View
 
 
 class LandingPage(View):
     def get(self, request):
-        return render(request, "index.html")
+        donated_bags = Donation.objects.count()
+        institutions = Institution.objects.count()
+        ctx = {"donated_bags": donated_bags, "institutions": institutions}
+        return render(request, "index.html", ctx)
 
 
 class AddDonation(View):

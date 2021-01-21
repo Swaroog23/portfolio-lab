@@ -20,7 +20,7 @@ class Institution(models.Model):
     categories = models.ManyToManyField(Category, related_name="institutions")
 
 
-class Doantion(models.Model):
+class Donation(models.Model):
     quantity = models.IntegerField()
     categories = models.ManyToManyField(Category, related_name="donations")
     address = models.CharField(max_length=50)
