@@ -6,7 +6,7 @@ from django.views import View
 class LandingPage(View):
     def get(self, request):
         donated_bags = Donation.objects.count()
-        institutions = Institution.objects.count()
+        institutions = Institution.objects.all()
         ctx = {"donated_bags": donated_bags, "institutions": institutions}
         return render(request, "index.html", ctx)
 
