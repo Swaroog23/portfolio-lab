@@ -36,6 +36,7 @@ class Login(View):
                 return redirect("/login/")
             else:
                 return redirect("/register/")
+
         else:
             messages.add_message(
                 request, messages.WARNING, "Proszę podać poprawny email"

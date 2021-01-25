@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth import views as django_auth_views
 
 from app_portfolio.views import LandingPage, AddDonation, Login, Register
 
@@ -24,4 +25,5 @@ urlpatterns = [
     path("add_donation/", AddDonation.as_view()),
     path("login/", Login.as_view()),
     path("register/", Register.as_view()),
+    path("logout/", django_auth_views.LogoutView.as_view(next_page="/")),
 ]
