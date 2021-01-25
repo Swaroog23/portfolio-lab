@@ -1,11 +1,12 @@
-from app_portfolio.forms import LoginForm, RegistrationForm
-import django
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from app_portfolio.models import Donation, Institution
 from django.shortcuts import redirect, render
 from django.views import View
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
+
+from app_portfolio.forms import LoginForm, RegistrationForm
+from app_portfolio.models import Category, Donation, Institution
 
 
 class LandingPage(View):
@@ -16,9 +17,11 @@ class LandingPage(View):
         return render(request, "index.html", ctx)
 
 
-class AddDonation(View):
+class AddDonation(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, "form.html")
+        categories = Category.objects.all()
+        ctx = {"categories": categories}
+        return render(request, "form.html", ctx)
 
 
 class Login(View):
@@ -31,6 +34,8 @@ class Login(View):
         if form.is_valid():
             login_function = Login.login_user(request, form)
             if login_function == 0:
+                # if request.POST.get("next"):
+                #     return redirect(request.POST.get("next"))
                 return redirect("/")
             elif login_function == 1:
                 return redirect("/login/")
