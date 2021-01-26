@@ -9,7 +9,7 @@ from app_portfolio.forms import LoginForm, RegistrationForm
 from app_portfolio.models import Category, Donation, Institution
 
 
-class LandingPage(View):
+class LandingPageView(View):
     def get(self, request):
         donated_bags = Donation.objects.count()
         institutions = Institution.objects.all()
@@ -17,14 +17,15 @@ class LandingPage(View):
         return render(request, "index.html", ctx)
 
 
-class AddDonation(LoginRequiredMixin, View):
+class DonationFormView(LoginRequiredMixin, View):
     def get(self, request):
         categories = Category.objects.all()
-        ctx = {"categories": categories}
+        institutions = Institution.objects.all()
+        ctx = {"categories": categories, "institutions": institutions}
         return render(request, "form.html", ctx)
 
 
-class Login(View):
+class LoginView(View):
     def get(self, request):
         form = LoginForm()
         return render(request, "login.html", {"form": form})
@@ -32,10 +33,11 @@ class Login(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            login_function = Login.login_user(request, form)
+            login_function = LoginView.login_user(request, form)
             if login_function == 0:
-                # if request.POST.get("next"):
-                #     return redirect(request.POST.get("next"))
+                successfull_login_redirect = request.GET.get("next")
+                if successfull_login_redirect:
+                    return redirect(successfull_login_redirect)
                 return redirect("/")
             elif login_function == 1:
                 return redirect("/login/")
@@ -66,14 +68,14 @@ class Login(View):
             return 2
 
 
-class Register(View):
+class RegisterView(View):
     def get(self, request):
         form = RegistrationForm()
         return render(request, "register.html", {"form": form})
 
     def post(self, request):
         form = RegistrationForm(request.POST)
-        if Register.register_user(request, form):
+        if RegisterView.register_user(request, form):
             return redirect("/login/")
         return redirect("/register/")
 

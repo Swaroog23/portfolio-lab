@@ -18,13 +18,18 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as django_auth_views
 
-from app_portfolio.views import LandingPage, AddDonation, Login, Register
+from app_portfolio.views import (
+    LandingPageView,
+    DonationFormView,
+    LoginView,
+    RegisterView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", LandingPage.as_view(), name="index"),
-    path("add_donation/", AddDonation.as_view(), name="add-donation"),
-    path("login/", Login.as_view(), name="login"),
-    path("register/", Register.as_view(), name="register"),
+    path("", LandingPageView.as_view(), name="index"),
+    path("add_donation/", DonationFormView.as_view(), name="add-donation"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("register/", RegisterView.as_view(), name="register"),
     path("logout/", django_auth_views.LogoutView.as_view(next_page="/"), name="logout"),
 ]

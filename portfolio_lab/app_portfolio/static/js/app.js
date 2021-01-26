@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   /**
    * HomePage - Help section
    */
@@ -46,12 +46,19 @@ document.addEventListener("DOMContentLoaded", function() {
       // Current slide
       this.currentSlide = $btn.parentElement.dataset.id;
 
+
       // Slides active class change
       this.$slidesContainers.forEach(el => {
         el.classList.remove("active");
 
         if (el.dataset.id === this.currentSlide) {
           el.classList.add("active");
+        }
+        if (el.dataset.id === 3) {
+
+          // first_slide = el.dataset.id === "1"
+          // chosen_categories === first_slide.children.classList("selected");
+          // console.log(chosen_categories, first_slide);
         }
       });
     }
@@ -143,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
   /**
    * Hide elements when clicked on document
    */
-  document.addEventListener("click", function(e) {
+  document.addEventListener("click", function (e) {
     const target = e.target;
     const tagName = target.tagName;
 
@@ -220,14 +227,37 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     updateForm() {
       this.$step.innerText = this.currentStep;
-
       // TODO: Validation
 
       this.slides.forEach(slide => {
         slide.classList.remove("active");
-
         if (slide.dataset.step == this.currentStep) {
           slide.classList.add("active");
+        }
+        if (this.currentStep === 1) {
+          let checkboxes = slide.querySelectorAll(".active > .form-group--checkbox > label > .checkbox");
+          checkboxes.forEach(elem => {
+            elem.addEventListener("click", event => {
+              if (elem.parentElement.querySelector("input").classList.contains("selected")) {
+                elem.parentElement.querySelector("input").classList.remove("selected");
+              } else {
+                elem.parentElement.querySelector("input").classList.add("selected");
+              }
+            })
+          })
+        };
+        if (this.currentStep === 3) {
+          let selected_categories_array = [];
+          this.slides[6].parentElement.children[0].querySelectorAll(".form-group--checkbox > label > .selected").forEach(item => {
+            selected_categories_array.push(item.value)
+          })
+
+          let institutions = this.slides[6].querySelectorAll(".form-group--checkbox")
+          institutions.forEach(institute => {
+            if (!institute.classList.contains(selected_categories_array)) {
+              institute.style.display = "none";
+            }
+          })
         }
       });
 
