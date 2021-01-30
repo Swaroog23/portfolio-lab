@@ -77,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (helpSection !== null) {
     new Help(helpSection);
   }
-
   /**
    * Form Select
    */
@@ -154,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const target = e.target;
     const tagName = target.tagName;
 
-    if (target.classList.contains("dropdown")) return false;
+    if (target.classList.contains("dropdown")) { return false };
 
     if (tagName === "LI" && target.parentElement.parentElement.classList.contains("dropdown")) {
       return false;
@@ -229,8 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
     updateForm() {
       this.stepOneCheckboxEvent();
       this.$step.innerText = this.currentStep;
-      // TODO: Validation
 
+      // TODO: Validation
       this.slides.forEach(slide => {
         slide.classList.remove("active");
         if (slide.dataset.step == this.currentStep) {
@@ -238,43 +237,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (this.currentStep === 3) {
           let selectedCategoriesArray = [];
-          this.slides[6].parentElement.children[0].querySelectorAll("div.selected > label > input").forEach(item => {
+          this.$form.querySelectorAll("[data-step='1']> div.selected > label > input").forEach(item => {
             selectedCategoriesArray.push(item.value)
           })
 
+
           let institutions = this.slides[6].querySelectorAll(".form-group--checkbox");
-          console.log(selectedCategoriesArray)
           institutions.forEach(institute => {
-            if (!institute.classList.contains(selectedCategoriesArray)) {
+            if (institute.style.display == "none") {
+              institute.style.display = "";
+            }
+            if (selectedCategoriesArray.length === 0) {
               institute.style.display = "none";
+            } else {
+              selectedCategoriesArray.forEach(category => {
+                if (!institute.classList.contains(category)) {
+                  institute.style.display = "none";
+                }
+              }
+              )
             }
           })
+
         }
       });
       this.checkIfRadioChecked();
 
       if (this.currentStep === 4) {
-        let buttonStepFour = this.$form.querySelector(".form--steps-container > form > [data-step='4']").querySelector(".next-step");
+        const buttonStepFour = this.$form.lastElementChild.lastElementChild.querySelector("[data-step='4'] > div.form-group--buttons > .next-step");
         buttonStepFour.addEventListener("click", e => {
-          let firstFormColumn = buttonStepFour.parentElement.previousElementSibling.firstElementChild;
-          let streetName = firstFormColumn.children[1].querySelector("input").value;
-          let cityName = firstFormColumn.children[2].querySelector("input").value;
-          let postalCode = firstFormColumn.children[3].querySelector("input").value;
-          let phoneNumber = firstFormColumn.children[4].querySelector("input").value;
+          let formData = this.getFormData();
+          let streetName = formData[0];
+          let cityName = formData[1];
+          let postalCode = formData[2];
+          let phoneNumber = formData[3];
+          let pickupDate = formData[4];
+          let pickupHour = formData[5];
+          let additionalInfo = formData[6];
+          let chosenOrganization = formData[7];
+          let amountOfBags = formData[8];
+          let itemsToDonate = formData[9];
 
-          let secondFormColumn = buttonStepFour.parentElement.previousElementSibling.lastElementChild;
-          let pickupDate = secondFormColumn.children[1].querySelector("input").value;
-          let pickupHour = secondFormColumn.children[2].querySelector("input").value;
-          let additionalInfo = secondFormColumn.children[3].querySelector("textarea").value;
-
-          let chosenOrganization = buttonStepFour.parentElement.parentElement.previousElementSibling.querySelector("div.selected > label > span.description > div.title").innerText;
-          let amountOfBags = buttonStepFour.parentElement.parentElement.previousElementSibling.previousElementSibling.querySelector("div.form-group--inline > label > input").value;
-          let itemsToDonate = [];
-          this.$form.querySelector(".form--steps-container > form > [data-step='1']").querySelectorAll("div.selected > label > span.description").forEach(
-            item => {
-              itemsToDonate.push(item.innerText)
-            }
-          );
 
 
           if (this.currentStep === 5) {
@@ -289,7 +292,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             bagsAndOrganisationInfo.lastElementChild.querySelector("span.summary--text").innerText = `Dla organizacji ${chosenOrganization}`
             let deliveryPickupInfo = finalizationForm.querySelectorAll("div.form-section--column");
-            console.log(deliveryPickupInfo)
             let deliveryPickupAddress = deliveryPickupInfo[0].querySelector("ul").children;
             deliveryPickupAddress[0].innerText = streetName;
             deliveryPickupAddress[1].innerText = cityName;
@@ -315,11 +317,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    getFormData() {
+      let firstFormColumn = this.$form.querySelector(".form--steps-container > form > [data-step='4']").children[1].firstElementChild;
+      let streetName = firstFormColumn.children[1].querySelector("input").value;
+      let cityName = firstFormColumn.children[2].querySelector("input").value;
+      let postalCode = firstFormColumn.children[3].querySelector("input").value;
+      let phoneNumber = firstFormColumn.children[4].querySelector("input").value;
+
+      let secondFormColumn = this.$form.querySelector(".form--steps-container > form > [data-step='4']").children[1].lastElementChild;
+      let pickupDate = secondFormColumn.children[1].querySelector("input").value;
+      let pickupHour = secondFormColumn.children[2].querySelector("input").value;
+      let additionalInfo = secondFormColumn.children[3].querySelector("textarea").value;
+
+      let chosenOrganization = this.$form.querySelector(".form--steps-container > form > [data-step='3']").querySelector("div.selected > label > span.description > div.title").innerText;
+      let amountOfBags = this.$form.querySelector(".form--steps-container > form > [data-step='2']").querySelector("div.form-group--inline > label > input").value;
+      let itemsToDonate = [];
+      this.$form.querySelector(".form--steps-container > form > [data-step='1']").querySelectorAll("div.selected > label > span.description").forEach(
+        item => {
+          itemsToDonate.push(item.innerText)
+        }
+      );
+      return [streetName, cityName, postalCode, phoneNumber, pickupDate, pickupHour, additionalInfo, chosenOrganization, amountOfBags, itemsToDonate]
+    }
+
     checkIfRadioChecked() {
       let radioCheboxes = this.$form.querySelector(".form--steps-container > form > [data-step='3']").querySelectorAll("div.form-group--checkbox > label > input");
       radioCheboxes.forEach(checkbox => {
         if (checkbox.checked) {
-
           checkbox.parentElement.parentElement.classList.add("selected");
         }
 
@@ -328,29 +352,50 @@ document.addEventListener("DOMContentLoaded", function () {
     stepOneCheckboxEvent() {
       let checkboxes = this.$form.querySelector(".form--steps-container > form > [data-step='1']").querySelectorAll("div.form-group--checkbox > label > input");
       checkboxes.forEach(elem => {
-        elem.addEventListener("change", event => {
-
+        elem.addEventListener("change", () => {
+          let atLeastOneChecked = false
           if (elem.checked) {
             elem.parentElement.parentElement.classList.add("selected");
+            atLeastOneChecked = true;
           } else {
             elem.parentElement.parentElement.classList.remove("selected");
+            for (let i = 0; i < checkboxes.length; i++) {
+              if (checkboxes[i].parentElement.parentElement.classList.contains("selected")) {
+                atLeastOneChecked = true;
+              } else {
+                atLeastOneChecked = false;
+              }
+            }
           }
-        })
-      })
+          if (atLeastOneChecked === true) {
+            for (let i = 0; i < checkboxes.length; i++) {
+              checkboxes[i].removeAttribute("required")
+            }
+          } else {
+            for (let i = 0; i < checkboxes.length; i++) {
+              checkboxes[i].setAttribute("required", true)
+            }
+          }
+        });
+      });
     };
+
     /**
      * Submit form
      *
      * TODO: validation, send data to server
      */
+
     submit(e) {
       e.preventDefault();
       this.currentStep++;
       this.updateForm();
+
+
     }
   }
   const form = document.querySelector(".form--steps");
   if (form !== null) {
     new FormSteps(form);
   }
-});
+})

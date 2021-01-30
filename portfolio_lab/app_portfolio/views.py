@@ -24,6 +24,10 @@ class DonationFormView(LoginRequiredMixin, View):
         ctx = {"categories": categories, "institutions": institutions}
         return render(request, "form.html", ctx)
 
+    def post(self, request):
+        print(request)
+        return render(request, "form-confirmation.html")
+
 
 class LoginView(View):
     def get(self, request):
