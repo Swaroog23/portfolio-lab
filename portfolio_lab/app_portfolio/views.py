@@ -25,7 +25,7 @@ class DonationFormView(LoginRequiredMixin, View):
         return render(request, "form.html", ctx)
 
     def post(self, request):
-        print(request)
+        print(request.POST)
         return render(request, "form-confirmation.html")
 
 

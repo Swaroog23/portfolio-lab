@@ -337,7 +337,8 @@ document.addEventListener("DOMContentLoaded", function () {
           itemsToDonate.push(item.innerText)
         }
       );
-      return [streetName, cityName, postalCode, phoneNumber, pickupDate, pickupHour, additionalInfo, chosenOrganization, amountOfBags, itemsToDonate]
+      let csrf_token = this.$form.querySelector("[name='csrfmiddlewaretoken']").value;
+      return [streetName, cityName, postalCode, phoneNumber, pickupDate, pickupHour, additionalInfo, chosenOrganization, amountOfBags, itemsToDonate, csrf_token]
     }
 
     checkIfRadioChecked() {
@@ -390,6 +391,26 @@ document.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
       this.currentStep++;
       this.updateForm();
+      let data = new FormData();
+      let userInputData = this.getFormData();
+      data.append("streetName", userInputData[0])
+      data.append("cityName", userInputData[1])
+      data.append("postalCode", userInputData[2])
+      data.append("phoneNumber", userInputData[3])
+      data.append("pickupDate", userInputData[4])
+      data.append("pickupHour", userInputData[5])
+      data.append("additionalInfo", userInputData[6])
+      data.append("chosenOrganization", userInputData[7])
+      data.append("amountOfBags", userInputData[8])
+      data.append("itemsToDonate", userInputData[9])
+      fetch("/add_donation/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": userInputData[10]
+        },
+        body: data,
+        credentials: 'same-origin'
+      })
 
 
     }
