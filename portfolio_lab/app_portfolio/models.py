@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
+import datetime
 
 INSTITUTION_TYPES = (
     (1, "Fundation"),
@@ -34,3 +36,8 @@ class Donation(models.Model):
     pick_up_time = models.TimeField()
     pick_up_comment = models.CharField(max_length=200)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
+
+    def save(self, *args, **kwargs):
+        if self.pick_up_date < datetime.date.today():
+            raise ValidationError("Data nie może być z przeszłości!")
+        super(Donation, self).save(*args, **kwargs)
