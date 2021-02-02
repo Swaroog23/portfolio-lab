@@ -5,7 +5,7 @@ from django.views import View
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 
-from app_portfolio.forms import LoginForm, RegistrationForm
+from app_portfolio.forms import LoginForm, RegistrationForm, DonationForm
 from app_portfolio.models import Category, Donation, Institution
 
 
@@ -21,11 +21,14 @@ class DonationFormView(LoginRequiredMixin, View):
     def get(self, request):
         categories = Category.objects.all()
         institutions = Institution.objects.all()
-        ctx = {"categories": categories, "institutions": institutions}
+        form = DonationForm()
+        ctx = {"categories": categories, "institutions": institutions, "form": form}
         return render(request, "form.html", ctx)
 
     def post(self, request):
-        print(request.POST)
+        form = DonationForm(request.POST)
+        if form.is_valid():
+            print(request.POST)
         return render(request, "form-confirmation.html")
 
 
