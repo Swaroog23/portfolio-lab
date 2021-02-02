@@ -388,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
      */
 
     submit(e) {
-      e.preventDefault();
+      // e.preventDefault();
       this.currentStep++;
       this.updateForm();
       let data = new FormData();
@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: {
           "X-CSRFToken": userInputData[10]
         },
-        body: data,
+        body: { "chosen_category": userInputData[9], "chosen_institution": userInputData[7] },
         credentials: 'same-origin'
       })
 

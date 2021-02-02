@@ -28,8 +28,8 @@ class DonationFormView(LoginRequiredMixin, View):
     def post(self, request):
         form = DonationForm(request.POST)
         if form.is_valid():
-            print(request.POST)
-        return render(request, "form-confirmation.html")
+            return render(request, "form-confirmation.html")
+        return render(request, "form.html")
 
 
 class LoginView(View):

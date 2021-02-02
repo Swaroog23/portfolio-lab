@@ -1,27 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-  {% if user.id %}
-    <header class="header--form-page">
-      <nav class="container container--70">
-        <ul class="nav--actions">
-          <li class="logged-user">
-            Witaj {{user.first_name}}
-            <ul class="dropdown">
-              <li><a href="#">Profil</a></li>
-              <li><a href="#">Ustawienia</a></li>
-              <li><a href="/logout/">Wyloguj</a></li>
-            </ul>
-          </li>
-        </ul>
-  {% else %}
-    <header class="header--form-page">
-      <nav class="container container--70">
-        <ul class="nav--actions">
-          <li><a href="/login/">Zaloguj</a></li>
-          <li class="highlighted"><a href="/register/">Załóż konto</a></li>
-        </ul>
-  {% endif %}
         <ul>
           <li><a href="/" class="btn btn--without-border active">Start</a></li>
           <li><a href="/#steps" class="btn btn--without-border">O co chodzi?</a></li>
@@ -82,7 +61,7 @@
 
       <div class="form--steps-container">
         <div class="form--steps-counter">Krok <span>1</span>/5</div>
-
+        <p>{{ form.amount_of_bags.errors }}</p>
         <form action="/add_donation/" method="POST">
           {% csrf_token %}
           <!-- STEP 1: class .active is switching steps -->
@@ -134,7 +113,7 @@
           {% for institution in institutions %}
             <div class="form-group form-group--checkbox {% for category in institution.categories.all %}{{ category.id }} {% endfor %}">
               <label>
-                <input type="radio" name="organization" value="old"/>
+                <input type="radio" name="organization" value="{{ institution.id }}"/>
                 <span class="checkbox radio"></span>
                 <span class="description">
                   <div class="title">{{ institution.name }}</div>
