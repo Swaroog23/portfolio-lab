@@ -24,6 +24,7 @@ from app_portfolio.views import (
     LoginView,
     RegisterView,
     dontaion_form_confirmation_view,
+    user_detail_view,
 )
 
 urlpatterns = [
@@ -34,4 +35,5 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("register/", RegisterView.as_view(), name="register"),
     path("logout/", django_auth_views.LogoutView.as_view(next_page="/"), name="logout"),
+    path("user/<int:user_id>", user_detail_view, name="user-detail"),
 ]

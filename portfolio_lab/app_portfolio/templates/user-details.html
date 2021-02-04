@@ -9,6 +9,20 @@
 <h2>Aktualny email: {{ user.email }}</h2> <br>
 <h2>Imię: {{ user.first_name }}</h2><br>
 <h2>Nazwisko: {{ user.last_name }}</h2><br>
+<h2>Przekazane datki: </h2>
+{% for donation in user.donation_set.all %}
+<ul>
+    <li>Dla kogo: <strong>{{ donation.institution.name }}</strong></li><br>
+    Przekazane przedmioty:<br>
+    {% for category in donation.categories.all %}
+    <li><strong>{{ category.name }}</strong></li><br>
+    {% endfor %}
+    <li>Ilość 60L worków: <strong>{{ donation.quantity}}</strong></li><br>
+    <li>Data odbioru: <strong>{{ donation.pick_up_date }}</strong></li><br>
+    <li>Godzina odbioru <strong>{{ donation.pick_up_time }}</strong></li><br>
+</ul><br>
+{% endfor %}
+
 </div>
 {% endblock content %}
 {% block footer %}
