@@ -62,11 +62,14 @@
           <p data-step="4">Podaj adres oraz termin odbioru rzeczy.</p>
         </div>
       </div>
+      {% for message in messages %}
+        <h1>{{ message }}</h1>
+        {% endfor %}
 
       <div class="form--steps-container">
         <div class="form--steps-counter">Krok <span>1</span>/5</div>
-        <p>{{ form.amount_of_bags.errors }}</p>
-        <form action="/add_donation/" method="POST">
+        
+        <form action="/add_donation/{{user.id}}" method="POST">
           {% csrf_token %}
           <!-- STEP 1: class .active is switching steps -->
           <div data-step="1" class="active">

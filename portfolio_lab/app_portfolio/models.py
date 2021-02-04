@@ -28,10 +28,11 @@ class Institution(models.Model):
 class Donation(models.Model):
     quantity = models.IntegerField()
     categories = models.ManyToManyField(Category, related_name="donations")
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     address = models.CharField(max_length=50)
     phone_number = models.IntegerField()
     city = models.CharField(max_length=100)
-    zip_code = models.IntegerField()
+    zip_code = models.CharField(max_length=6)
     pick_up_date = models.DateField()
     pick_up_time = models.TimeField()
     pick_up_comment = models.CharField(max_length=200)

@@ -1,5 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db.models.lookups import In
 from django.shortcuts import redirect, render
 from django.views import View
 from django.contrib.auth import login, authenticate
@@ -7,6 +9,10 @@ from django.contrib import messages
 
 from app_portfolio.forms import LoginForm, RegistrationForm, DonationForm
 from app_portfolio.models import Category, Donation, Institution
+
+
+def dontaion_form_confirmation_view(request):
+    return render(request, "form-confirmation.html")
 
 
 class LandingPageView(View):
@@ -18,19 +24,85 @@ class LandingPageView(View):
 
 
 class DonationFormView(LoginRequiredMixin, View):
-    def get(self, request):
+    def get(self, request, user_id):
         categories = Category.objects.all()
         institutions = Institution.objects.all()
         form = DonationForm()
         ctx = {"categories": categories, "institutions": institutions, "form": form}
         return render(request, "form.html", ctx)
 
-    def post(self, request):
+    def post(self, request, user_id):
         form = DonationForm(request.POST)
-        if form.is_valid():
-            print(request.POST)
-            return render(request, "form-confirmation.html")
-        return render(request, "form.html")
+        user = User.objects.get(pk=user_id)
+        if (
+            form.is_valid()
+            and request.POST.get("categories")
+            and request.POST.get("organization")
+        ):
+            try:
+                DonationFormView.get_form_data_and_create_donation(request, form, user)
+            except ValidationError:
+                messages.add_message(
+                    request, messages.WARNING, "Data nie może być z przeszłości!"
+                )
+                return render(
+                    request,
+                    "form.html",
+                    {
+                        "form": DonationForm(),
+                        "categories": Category.objects.all(),
+                        "institutions": Institution.objects.all(),
+                    },
+                )
+            return redirect("/donation_confirmed/")
+        messages.add_message(
+            request, messages.WARNING, "Wystąpił błąd, wypełnij formularz ponownie"
+        )
+        return render(
+            request,
+            "form.html",
+            {
+                "form": DonationForm(),
+                "categories": Category.objects.all(),
+                "institutions": Institution.objects.all(),
+            },
+        )
+
+    @staticmethod
+    def get_form_data_and_create_donation(request, form, user):
+        chosen_categories = request.POST.getlist("categories")
+        amount_of_bags = int(form.cleaned_data["amount_of_bags"])
+        chosen_organization = request.POST.get("organization")
+        street = form.cleaned_data["street"]
+        city = form.cleaned_data["city"]
+        postal_code = form.cleaned_data["postal_code"]
+        phone_number = int(form.cleaned_data["phone_number"])
+        pickup_date = form.cleaned_data["pickup_date"]
+        pickup_time = form.cleaned_data["pickup_time"]
+        additional_pickup_information = form.cleaned_data[
+            "additional_pickup_information"
+        ]
+        try:
+            new_donation = Donation()
+            new_donation.quantity = amount_of_bags
+            new_donation.institution = Institution.objects.get(
+                pk=int(chosen_organization)
+            )
+            new_donation.address = street
+            new_donation.phone_number = phone_number
+            new_donation.city = city
+            new_donation.zip_code = postal_code
+            new_donation.pick_up_date = pickup_date
+            new_donation.pick_up_time = pickup_time
+            new_donation.pick_up_comment = additional_pickup_information
+            new_donation.user = user
+            new_donation.save()
+            for item in chosen_categories:
+                new_donation.categories.add(Category.objects.get(pk=int(item)))
+            new_donation.save()
+            return new_donation
+        except ValidationError as err:
+            raise ValidationError("Data nie może być z przeszłości!")
 
 
 class LoginView(View):

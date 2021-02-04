@@ -381,41 +381,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     };
 
-    /**
-     * Submit form
-     *
-     * TODO: validation, send data to server
-     */
-
     submit(e) {
-<<<<<<< HEAD
-      // e.preventDefault();
-=======
->>>>>>> tmp
       this.currentStep++;
       this.updateForm();
-      let data = new FormData();
-      let userInputData = this.getFormData();
-      data.append("streetName", userInputData[0])
-      data.append("cityName", userInputData[1])
-      data.append("postalCode", userInputData[2])
-      data.append("phoneNumber", userInputData[3])
-      data.append("pickupDate", userInputData[4])
-      data.append("pickupHour", userInputData[5])
-      data.append("additionalInfo", userInputData[6])
-      data.append("chosenOrganization", userInputData[7])
-      data.append("amountOfBags", userInputData[8])
-      data.append("itemsToDonate", userInputData[9])
-      fetch("/add_donation/", {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": userInputData[10]
-        },
-        body: { "chosen_category": userInputData[9], "chosen_institution": userInputData[7] },
-        credentials: 'same-origin'
-      })
-
-
     }
   }
   const form = document.querySelector(".form--steps");
