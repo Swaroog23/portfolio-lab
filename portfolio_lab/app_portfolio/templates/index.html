@@ -1,5 +1,9 @@
-{% extends  'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
+{% block account_and_login %}
+  <header class="header--main-page">
+  {{block.super}}
+{% endblock account_and_login %}
 {% block content %}
         <ul>
           <li><a href="/" class="btn btn--without-border active">Start</a></li>
