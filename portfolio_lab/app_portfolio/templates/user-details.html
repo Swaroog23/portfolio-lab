@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block account_and_login %}
+<header>
+{{ block.super }}
+{% endblock account_and_login %}
+{% block content %}
+<div class="container--70">
+<h2>Aktualny email: {{ user.email }}</h2> <br>
+<h2>Imię: {{ user.first_name }}</h2><br>
+<h2>Nazwisko: {{ user.last_name }}</h2><br>
+</div>
+{% endblock content %}
+{% block footer %}
+{% endblock footer %}

@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db.models.lookups import In
 from django.shortcuts import redirect, render
@@ -7,12 +8,19 @@ from django.views import View
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 
+
 from app_portfolio.forms import LoginForm, RegistrationForm, DonationForm
 from app_portfolio.models import Category, Donation, Institution
 
 
 def dontaion_form_confirmation_view(request):
     return render(request, "form-confirmation.html")
+
+
+@login_required
+def user_detail_view(request, user_id):
+    user = User.objects.get(pk=user_id)
+    return render(request, "user-details.html", {"user": user})
 
 
 class LandingPageView(View):
