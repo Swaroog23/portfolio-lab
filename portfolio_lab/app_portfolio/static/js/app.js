@@ -388,7 +388,6 @@ document.addEventListener("DOMContentLoaded", function () {
      */
 
     submit(e) {
-      e.preventDefault();
       this.currentStep++;
       this.updateForm();
       let data = new FormData();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="pl">
   <head>
-  {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
@@ -9,6 +9,27 @@
     <link rel="stylesheet" href={% static 'css/style.css' %} />
   </head>
   <body>
+  {% block account_and_login %}
+  {% if user.id %}
+      <nav class="container container--70">
+        <ul class="nav--actions">
+          <li class="logged-user">
+            Witaj {{user.first_name}}
+            <ul class="dropdown">
+              <li><a href="#">Profil</a></li>
+              <li><a href="#">Ustawienia</a></li>
+              <li><a href="/logout/">Wyloguj</a></li>
+            </ul>
+          </li>
+        </ul>
+{% else %}
+      <nav class="container container--70">
+        <ul class="nav--actions">
+          <li><a href="/login/" class="btn btn--small btn--without-border">Zaloguj</a></li>
+          <li><a href="/register/" class="btn btn--small btn--highlighted">Załóż konto</a></li>
+        </ul>
+{% endif %}
+  {% endblock account_and_login %}
   {% block content %}
   {% endblock content %}
   {% block footer %}
