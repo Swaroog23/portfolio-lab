@@ -26,17 +26,14 @@ def user_detail_view(request, user_id):
 class LandingPageView(View):
     def get(self, request):
         donated_bags = Donation.objects.count()
-        institutions = Institution.objects.all()
-        ctx = {"donated_bags": donated_bags, "institutions": institutions}
+        ctx = {"donated_bags": donated_bags}
         return render(request, "index.html", ctx)
 
 
 class DonationFormView(LoginRequiredMixin, View):
     def get(self, request, user_id):
-        categories = Category.objects.all()
-        institutions = Institution.objects.all()
         form = DonationForm()
-        ctx = {"categories": categories, "institutions": institutions, "form": form}
+        ctx = {"form": form}
         return render(request, "form.html", ctx)
 
     def post(self, request, user_id):
@@ -53,28 +50,12 @@ class DonationFormView(LoginRequiredMixin, View):
                 messages.add_message(
                     request, messages.WARNING, "Data nie może być z przeszłości!"
                 )
-                return render(
-                    request,
-                    "form.html",
-                    {
-                        "form": DonationForm(),
-                        "categories": Category.objects.all(),
-                        "institutions": Institution.objects.all(),
-                    },
-                )
+                return render(request, "form.html", {"form": DonationForm()})
             return redirect("/donation_confirmed/")
         messages.add_message(
             request, messages.WARNING, "Wystąpił błąd, wypełnij formularz ponownie"
         )
-        return render(
-            request,
-            "form.html",
-            {
-                "form": DonationForm(),
-                "categories": Category.objects.all(),
-                "institutions": Institution.objects.all(),
-            },
-        )
+        return render(request, "form.html", {"form": DonationForm()})
 
     @staticmethod
     def get_form_data_and_create_donation(request, form, user):
