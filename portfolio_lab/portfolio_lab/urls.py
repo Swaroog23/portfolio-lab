@@ -30,7 +30,7 @@ from app_portfolio.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", LandingPageView.as_view(), name="index"),
-    path("add_donation/<int:user_id>", DonationFormView.as_view(), name="add-donation"),
+    path("add_donation/<user_id>", DonationFormView.as_view(), name="add-donation"),
     path("donation_confirmed/", dontaion_form_confirmation_view, name="from-confirm"),
     path("login/", LoginView.as_view(), name="login"),
     path("register/", RegisterView.as_view(), name="register"),
