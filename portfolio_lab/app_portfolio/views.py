@@ -31,12 +31,26 @@ class LandingPageView(View):
 
 
 class DonationFormView(LoginRequiredMixin, View):
+    """Class for handling donation form and creation of donation objects,
+    if form was validated successfully
+    """
+
     def get(self, request, user_id):
         form = DonationForm()
         ctx = {"form": form}
         return render(request, "form.html", ctx)
 
     def post(self, request, user_id):
+        """Method handling POST request
+
+        Args:
+            user_id (Int): id of logged user
+
+        Returns:
+            If donation form is valid, returns user to confirmation site,
+            else return empty form and information about an error via
+            messeges framework
+        """
         form = DonationForm(request.POST)
         user = User.objects.get(pk=user_id)
         if (
@@ -59,6 +73,18 @@ class DonationFormView(LoginRequiredMixin, View):
 
     @staticmethod
     def get_form_data_and_create_donation(request, form, user):
+        """
+        Class method for checking if date field is valid,
+        and if yes, creates new donation object.
+
+        Args:
+            form (Form): DonationForm with request.POST data
+            user (User): Logged user object
+
+        Raises:
+            ValidationError: if date field is from the past, save() raises
+            ValidationError.
+        """
         chosen_categories = request.POST.getlist("categories")
         amount_of_bags = int(form.cleaned_data["amount_of_bags"])
         chosen_organization = request.POST.get("organization")
@@ -71,35 +97,46 @@ class DonationFormView(LoginRequiredMixin, View):
         additional_pickup_information = form.cleaned_data[
             "additional_pickup_information"
         ]
+        # Filing up donation object with data to prepare it for
+        # save() validation
+        new_donation = Donation()
+        new_donation.quantity = amount_of_bags
+        new_donation.institution = Institution.objects.get(pk=int(chosen_organization))
+        new_donation.address = street
+        new_donation.phone_number = phone_number
+        new_donation.city = city
+        new_donation.zip_code = postal_code
+        new_donation.pick_up_date = pickup_date
+        new_donation.pick_up_time = pickup_time
+        new_donation.pick_up_comment = additional_pickup_information
+        new_donation.user = user
         try:
-            new_donation = Donation()
-            new_donation.quantity = amount_of_bags
-            new_donation.institution = Institution.objects.get(
-                pk=int(chosen_organization)
-            )
-            new_donation.address = street
-            new_donation.phone_number = phone_number
-            new_donation.city = city
-            new_donation.zip_code = postal_code
-            new_donation.pick_up_date = pickup_date
-            new_donation.pick_up_time = pickup_time
-            new_donation.pick_up_comment = additional_pickup_information
-            new_donation.user = user
+            # first save to check if date is not from the past
+            # as save() returns ValidationError if date is from past
             new_donation.save()
             for item in chosen_categories:
                 new_donation.categories.add(Category.objects.get(pk=int(item)))
+            # second save for updating ManyToMany category field
             new_donation.save()
-            return new_donation
         except ValidationError as err:
             raise ValidationError("Data nie może być z przeszłości!")
 
 
 class LoginView(View):
+    """View for logging in user."""
+
     def get(self, request):
         form = LoginForm()
         return render(request, "login.html", {"form": form})
 
     def post(self, request):
+        """Method handling POST request
+
+        Returns:
+            If user was logged in, returns to index, if credentials where wrong,
+            but login was correct, returns to login. If email is not in db,
+            returns to register.
+        """
         form = LoginForm(request.POST)
         if form.is_valid():
             login_function = LoginView.login_user(request, form)
@@ -121,6 +158,16 @@ class LoginView(View):
 
     @staticmethod
     def login_user(request, form):
+        """Method for handling logging in
+
+        Args:
+            form (Form): Login form with request.POST data
+
+        Returns:
+            If logging in was succesfull, returns 0 and logs user,
+            if email exists but password was wrong returns 1,
+            else returns 2
+        """
         email = form.cleaned_data["email"]
         password = form.cleaned_data["password"]
         user = authenticate(request, username=email, password=password)
@@ -145,11 +192,23 @@ class RegisterView(View):
     def post(self, request):
         form = RegistrationForm(request.POST)
         if RegisterView.register_user(request, form):
+            # if registering proccess was successfull,
+            # returns user to login site
             return redirect("/login/")
         return redirect("/register/")
 
     @staticmethod
     def register_user(request, form):
+        """Method for registering user
+        If passwords are not matching, if given email is taken or
+        if email is not email format returns error and False,
+
+        Args:
+            form (Form): Register form filled with request.POST data
+
+        Returns:
+            True, if successfully registered user, else False
+        """
         if form.is_valid():
             first_name = form.cleaned_data["name"]
             last_name = form.cleaned_data["surname"]
