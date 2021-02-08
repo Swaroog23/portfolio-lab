@@ -284,11 +284,11 @@ document.addEventListener("DOMContentLoaded", function () {
             let finalizationForm = this.$form.querySelector(".form--steps-container > form > [data-step='5']").querySelector("div.summary");
             let bagsAndOrganisationInfo = finalizationForm.querySelector("div.form-section").querySelector("ul");
             if (amountOfBags === "1") {
-              bagsAndOrganisationInfo.firstElementChild.querySelector("span.summary--text").innerText += `1 worek ${itemsToDonate}`
+              bagsAndOrganisationInfo.firstElementChild.querySelector("span.summary--text").innerText = `1 worek ${itemsToDonate} `
             } else if (amountOfBags > 1 && amountOfBags < 5) {
-              bagsAndOrganisationInfo.firstElementChild.querySelector("span.summary--text").innerText += `${amountOfBags} worki ${itemsToDonate}`
+              bagsAndOrganisationInfo.firstElementChild.querySelector("span.summary--text").innerText = `${amountOfBags} worki ${itemsToDonate} `
             } else {
-              bagsAndOrganisationInfo.firstElementChild.querySelector("span.summary--text").innerText += `${amountOfBags} worków ${itemsToDonate}`
+              bagsAndOrganisationInfo.firstElementChild.querySelector("span.summary--text").innerText = `${amountOfBags} worków ${itemsToDonate} `
             }
             bagsAndOrganisationInfo.lastElementChild.querySelector("span.summary--text").innerText = `Dla organizacji ${chosenOrganization}`
             let deliveryPickupInfo = finalizationForm.querySelectorAll("div.form-section--column");
@@ -306,7 +306,6 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
               deliveryPickupDateTime[2].innerText = "Brak uwag"
             }
-
           }
         })
 
